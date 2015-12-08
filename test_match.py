@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 import match 
-import pytest #as Test
+import pytest 
 import unittest
-
-#print match.dotprod(1,2,3)
 
 @pytest.mark.parametrize("description, string, tokens",[
     ('Tokenize should handle text', 'A quick brown fox jumps over the lazy dog.', ['a','quick','brown','fox','jumps','over','the','lazy','dog']),
@@ -48,8 +46,17 @@ def test_norm(description, vector, norm):
 def test_cossim():
     pass
 
-def test_invert_to_dict():
-    pass
+@pytest.mark.parametrize("description, inputDict, outputDict",[
+            ("no overlapping tokens", {'foo': {'footken' : 1}, 'bar': {'bartoken' : 1}, 'baz': {'baztoken': 1} }, \
+                                        {'footken' : ['foo'], 'bartoken' : ['bar'], 'baztoken' : ['baz']}),
+            ("sharing common tokens", {'foo': {'spam' : 1, 'eggs' : 1 }, 'bar': {'spam' : 1}, 'baz': {'eggs' : 1} }, \
+                                        {'spam' : ['foo', 'bar'], 'eggs' : ['foo', 'baz']} ),
+])
+def test_invert_to_dict(description, inputDict, outputDict):
+    invertedInput = match.invertToDict(inputDict)
+    assert sorted(invertedInput.keys()) == sorted(outputDict.keys())
+    for key in invertedInput.keys():
+        assert sorted(invertedInput[key]) == sorted(outputDict[key])
 
 def test_find_common_tokens():
     pass
