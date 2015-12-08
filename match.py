@@ -14,7 +14,7 @@ def main():
     invertedProductIndexDict = invertToDict(productTFIDF)
     invertedListingIndexDict = invertToDict(listingTFIDF)
     commonTokenMapping = findCommonTokens(invertedProductIndexDict, invertedListingIndexDict)
-    results = match(commonTokenMapping, productTFIDF, listingTFIDF)
+    results = match(productTFIDF, listingTFIDF, commonTokenMapping)
     writeResults(results, listingData)
 
 def tokenize(string):
@@ -78,7 +78,7 @@ def writeResults(results, listingData):
         f.write("\n")
     return
 
-def match(commonTokenMapping, productTFIDF, listingTFIDF):
+def match(productTFIDF, listingTFIDF, commonTokenMapping):
     '''Match products to listing usings the cossim similarity. Each product matches at most one listing. 0.25 threshold could be adjusted, but seems to be the tipping point between losing true positives and accumulating a lot of false positives
     Args: 
         commonTokenMapping (dict) : mapping {(product, listingID) : [commonTokens]}
@@ -155,6 +155,8 @@ def tfidf(tfs, idfs):
     """
     tfIdfDict = {}
     for k, v in tfs.items():
+        for token in v.keys():
+            print k, v[token], idfs[token]
         tfIdfDict[k] = { token: v[token]*idfs[token] for token in v.keys()}
     return tfIdfDict
 

@@ -56,8 +56,12 @@ def test_dot_prod(description, vec1, vec2, common, expected):
 def test_norm(description, vector, norm):
     assert match.norm(vector) - norm < 0.0000001
     
-def test_cossim():
-    pass
+@pytest.mark.parametrize("description, vec1, vec2, common, expected",[
+            ('Same components', {'A' : 1, 'B' : 2, 'C' : 3 }, {'A' : 1 , 'B' : 2, 'C' : 3}, ['A', 'B', 'C'], 1),
+            ('different components', {'A' : 3 ,'B' : 2, 'C' : 1}, {'A' : 2, 'D' : 3, 'E' : 4}, ['A'],  0.2977750),
+])
+def test_cossim(description, vec1, vec2, common, expected):
+    assert match.cossim(vec1, vec2, common) - expected < 0.0000001
 
 @pytest.mark.parametrize("description, inputDict, outputDict",[
             ("no overlapping tokens", {'foo': {'footken' : 1}, 'bar': {'bartoken' : 1}, 'baz': {'baztoken': 1} }, \
@@ -89,5 +93,11 @@ def test_find_common_tokens(description, inputA, inputB, outputDict):
     for key in commonTokenDict.keys():
         assert sorted(commonTokenDict[key]) == sorted(outputDict[key])
 
-def test_match():
-    pass
+@pytest.mark.parametrize("description, vec1, vec2, common, expected",[
+            ('Same components', {'product' : {'A' : 1, 'B' : 2, 'C' : 3 }}, {'listing': {'A' : 1 , 'B' : 2, 'C' : 3}}, \
+                                { ('product', 'listing'): ['A', 'B', 'C']}, { 'product' : ['listing', 1.0]}),
+            ('different components', {'product': {'A' : 4 ,'B' : 2, 'C' : 5}}, {'listing': {'A' : 2, 'D' : 3, 'E' : 4}}, \
+                                 { ('product', 'listing'):['A'] },  {}),
+])
+def test_match(description, vec1, vec2, common, expected):
+    assert match.match(vec1, vec2, common) == expected
